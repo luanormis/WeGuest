@@ -1,0 +1,6 @@
+{
+  "name": "WeGuest - Plataforma SaaS de Casamentos de Luxo",
+  "description": "Plataforma SaaS multi-tenant de casamentos para o ecossistema Welucci, com checkout transparente Getnet, split financeiro e lista de presentes inteligente.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
