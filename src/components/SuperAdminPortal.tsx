@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FinanceProjectionCard } from './FinanceProjectionCard';
 import { useApp } from '../context/AppContext';
 import { Role } from '../types';
 import { WelucciLogo } from './WelucciLogo';
@@ -361,6 +362,8 @@ export const SuperAdminPortal: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <FinanceProjectionCard />
 
         {/* Tenant Information Card */}
         <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">

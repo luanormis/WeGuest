@@ -34,6 +34,12 @@ export interface Casal {
   repassar_taxas: boolean; // Se true, convidado paga taxas no checkout
   pix_chave?: string;
   banco_saque?: string;
+  historia_casal?: string;
+  mensagem_boas_vindas?: string;
+  foto_capa_key?: 'coupleHero' | 'coupleMoment';
+  espaco_foto_key?: 'gardensCeremony' | 'gardensMainHall' | 'gardensWaterfall' | 'gardensSpa';
+  video_urls?: string[];
+  foto_urls?: string[];
 }
 
 export interface Convidado {

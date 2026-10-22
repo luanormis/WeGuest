@@ -32,6 +32,10 @@ export const PublicWeddingSite: React.FC = () => {
     showToast 
   } = useApp();
 
+  const heroImage = WEDDING_IMAGES[couple.foto_capa_key || 'coupleHero'];
+  const venueImage = WEDDING_IMAGES[couple.espaco_foto_key || 'gardensCeremony'];
+  const formattedWeddingDate = new Date(`${couple.data_evento}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
   // Internal page navigation
   const [activeSection, setActiveSection] = useState<'home' | 'schedule' | 'rsvp' | 'gifts' | 'guestbook'>('home');
 
@@ -168,7 +172,7 @@ export const PublicWeddingSite: React.FC = () => {
           <section className="relative overflow-hidden bg-[#111111] text-white">
             <div className="absolute inset-0 z-0 opacity-40 mix-blend-luminosity">
               <img
-                src={WEDDING_IMAGES.coupleHero}
+                src={heroImage}
                 alt="Guilherme & Victória"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-center"
@@ -191,17 +195,17 @@ export const PublicWeddingSite: React.FC = () => {
               <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#C5A880] to-transparent mx-auto" />
 
               <p className="font-serif italic text-lg sm:text-xl text-[#DFCDAE]/90 max-w-xl mx-auto leading-relaxed">
-                "O amor é paciente e bondoso. Celebramos a certeza de um amor que floresce em cada estação."
+                {couple.mensagem_boas_vindas || 'O amor é paciente e bondoso. Celebramos a certeza de um amor que floresce em cada estação.'}
               </p>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-mono tracking-widest text-stone-300">
                 <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/15 backdrop-blur-xs">
                   <Calendar className="w-4 h-4 text-[#C5A880]" />
-                  <span>17 DE OUTUBRO DE 2027</span>
+                  <span>{formattedWeddingDate.toLocaleUpperCase('pt-BR')}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/15 backdrop-blur-xs">
                   <MapPin className="w-4 h-4 text-[#C5A880]" />
-                  <span>WELUCCI GARDENS, SP</span>
+                  <span>{couple.espaco_nome.toUpperCase()}</span>
                 </div>
               </div>
 
@@ -236,11 +240,11 @@ export const PublicWeddingSite: React.FC = () => {
                 </div>
                 
                 <p className="text-stone-600 leading-relaxed text-sm">
-                  De encontros despretensiosos a viagens inesquecíveis, construímos juntos cada detalhe do nosso sonho. Escolhemos o Welucci Gardens por representar perfeitamente o nosso estilo: a sofisticação da arquitetura moderna em total harmonia com a natureza exuberante de São Paulo.
+                  {couple.historia_casal || 'De encontros despretensiosos a viagens inesquecíveis, construímos juntos cada detalhe do nosso sonho. Escolhemos este espaço por representar perfeitamente o nosso estilo e a celebração que queremos compartilhar com as pessoas que amamos.'}
                 </p>
 
                 <p className="text-stone-600 leading-relaxed text-sm">
-                  Ter a sua presença ao nosso lado neste altar é o nosso maior presente. Esperamos você para celebrar, dançar e brindar ao amor!
+                  {couple.mensagem_boas_vindas || 'Ter a sua presença ao nosso lado neste altar é o nosso maior presente. Esperamos você para celebrar, dançar e brindar ao amor!'}
                 </p>
 
                 <div className="pt-2 flex items-center gap-4 text-xs text-stone-500 font-mono">
@@ -253,7 +257,7 @@ export const PublicWeddingSite: React.FC = () => {
               <div className="relative">
                 <div className="aspect-4/3 rounded-2xl overflow-hidden border border-stone-200 shadow-md">
                   <img
-                    src={WEDDING_IMAGES.coupleMoment}
+                    src={venueImage}
                     alt="Guilherme & Victória votos"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
