@@ -13,6 +13,28 @@ function response(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+async function copyBetweenBuckets(
+  adminClient: ReturnType<typeof createClient>,
+  sourceBucket: string,
+  destinationBucket: string,
+  path: string,
+) {
+  const { data: blob, error: downloadError } = await adminClient.storage
+    .from(sourceBucket)
+    .download(path);
+  if (downloadError || !blob) {
+    return { error: downloadError ?? new Error("source_object_not_found") };
+  }
+
+  const { error: uploadError } = await adminClient.storage
+    .from(destinationBucket)
+    .upload(path, blob, {
+      contentType: blob.type || "application/octet-stream",
+      upsert: false,
+    });
+  return { error: uploadError };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -53,14 +75,14 @@ Deno.serve(async (req: Request) => {
   const coupleId = typeof body.coupleId === "string" ? body.coupleId : "";
   const mediaId = typeof body.mediaId === "string" ? body.mediaId : "";
   const action = body.action;
-
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
   if (!uuidPattern.test(coupleId) || !uuidPattern.test(mediaId) ||
       (action !== "publish" && action !== "unpublish")) {
     return response(400, { error: "invalid_parameters" });
   }
 
-  // RLS on this user-scoped query is the ownership/staff authorization gate.
+  // This user-scoped query applies wg_media RLS and validates ownership/staff access.
   const { data: media, error: mediaError } = await userClient
     .from("wg_media")
     .select("id,couple_id,storage_bucket,storage_path,is_published,published_at")
@@ -72,7 +94,7 @@ Deno.serve(async (req: Request) => {
     return response(404, { error: "media_not_found_or_not_authorized" });
   }
 
-  // Storage policies and this function use <couple UUID>/<filename> paths.
+  // Storage paths must use <couple UUID>/<filename>.
   if (typeof media.storage_path !== "string" ||
       !media.storage_path.startsWith(coupleId + "/") ||
       media.storage_path.includes("..")) {
@@ -102,12 +124,9 @@ Deno.serve(async (req: Request) => {
       return response(409, { error: "media_state_conflict" });
     }
 
-    const { error: copyError } = await adminClient.storage
-      .from("weguest-private")
-      .copy(path, path, { destinationBucket: "weguest-public" } as never);
-
-    // If this Supabase SDK deployment does not accept cross-bucket copy options,
-    // the endpoint fails closed and does not update publication metadata.
+    const { error: copyError } = await copyBetweenBuckets(
+      adminClient, "weguest-private", "weguest-public", path,
+    );
     if (copyError) {
       return response(502, { error: "public_copy_failed", detail: copyError.message });
     }
@@ -133,7 +152,7 @@ Deno.serve(async (req: Request) => {
     return response(200, { ok: true, status: "already_private" });
   }
 
-  // The private original remains in place from the initial upload.
+  // Remove public copy first; the original private object is retained.
   const { error: removeError } = await adminClient.storage
     .from("weguest-public")
     .remove([path]);
@@ -152,10 +171,8 @@ Deno.serve(async (req: Request) => {
     .eq("couple_id", coupleId);
 
   if (updateError) {
-    // Best-effort compensation to avoid metadata saying "published" while the object is gone.
-    await adminClient.storage.from("weguest-private").copy(path, path, {
-      destinationBucket: "weguest-public",
-    } as never);
+    // Best-effort compensation; metadata remains published if the update failed.
+    await copyBetweenBuckets(adminClient, "weguest-private", "weguest-public", path);
     return response(500, { error: "unpublish_metadata_update_failed" });
   }
 
