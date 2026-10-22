@@ -10,6 +10,7 @@ import { SupabaseSqlCard } from './components/SupabaseSqlCard';
 import { GetnetCheckoutModal } from './components/GetnetCheckoutModal';
 import { MobileFrameWrapper } from './components/MobileFrameWrapper';
 import { ToastContainer } from './components/ToastContainer';
+import { DemoAccessGate } from './components/DemoAccessGate';
 
 const MainContent: React.FC = () => {
   const { activeView } = useApp();
@@ -35,10 +36,12 @@ const MainContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AppProvider>
-      <MobileFrameWrapper>
-        <MainContent />
-      </MobileFrameWrapper>
-    </AppProvider>
+    <DemoAccessGate>
+      <AppProvider>
+        <MobileFrameWrapper>
+          <MainContent />
+        </MobileFrameWrapper>
+      </AppProvider>
+    </DemoAccessGate>
   );
 }
