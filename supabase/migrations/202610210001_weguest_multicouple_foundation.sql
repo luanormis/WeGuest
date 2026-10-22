@@ -230,7 +230,6 @@ for select to authenticated using (
 -- Public content is exposed through a restricted view only. It intentionally omits guest PII,
 -- financial details, owner identity, unpublished couples, and private guestbook entries.
 create or replace view public.wg_public_sites
-with (security_invoker = true)
 as
 select
   c.id as couple_id,
