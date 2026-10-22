@@ -257,7 +257,7 @@ export const PublicWeddingSite: React.FC = () => {
               <div className="relative">
                 <div className="aspect-4/3 rounded-2xl overflow-hidden border border-stone-200 shadow-md">
                   <img
-                    src={WEDDING_IMAGES.coupleMoment}
+                    src={venueImage}
                     alt="Guilherme & Victória votos"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
