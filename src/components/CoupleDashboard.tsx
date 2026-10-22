@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { WeddingCustomizationPanel } from './WeddingCustomizationPanel';
 import { useApp } from '../context/AppContext';
 import { 
   Calendar, 
@@ -224,6 +225,8 @@ export const CoupleDashboard: React.FC = () => {
             </button>
           </div>
         </div>
+
+        <WeddingCustomizationPanel />
 
         {/* Tab Navigation */}
         <div className="flex items-center gap-2 border-b border-stone-200 pb-2 overflow-x-auto">
