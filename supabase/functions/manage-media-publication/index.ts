@@ -131,7 +131,7 @@ Deno.serve(async (req: Request) => {
       return response(502, { error: "public_copy_failed", detail: copyError.message });
     }
 
-    const { error: updateError } = await userClient
+    const { error: updateError } = await adminClient
       .from("wg_media")
       .update({
         storage_bucket: "weguest-public",
@@ -160,7 +160,7 @@ Deno.serve(async (req: Request) => {
     return response(502, { error: "public_object_removal_failed", detail: removeError.message });
   }
 
-  const { error: updateError } = await userClient
+  const { error: updateError } = await adminClient
     .from("wg_media")
     .update({
       storage_bucket: "weguest-private",
